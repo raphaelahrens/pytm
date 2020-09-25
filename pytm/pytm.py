@@ -405,6 +405,7 @@ class Threat():
     id = varString("", required=True)
     description = varString("")
     condition = varString("", doc="""a Python expression that should evaluate
+    """"""
 to a boolean True or False""")
     details = varString("")
     severity = varString("")
@@ -448,14 +449,23 @@ class Finding():
 and a description of the finding"""
 
     element = varElement(None, required=True, doc="Element this finding applies to")
+    """Element this finding applies to"""
     target = varString("", doc="Name of the element this finding applies to")
+    """Name of the element this finding applies to"""
     description = varString("", required=True, doc="Threat description")
+    """Threat description"""
     details = varString("", required=True, doc="Threat details")
+    """Threat details"""
     severity = varString("", required=True, doc="Threat severity")
+    """Threat severity"""
     mitigations = varString("", required=True, doc="Threat mitigations")
+    """Threat mitigations"""
     example = varString("", required=True, doc="Threat example")
+    """Threat example"""
     id = varString("", required=True, doc="Threat ID")
+    """Threat ID"""
     references = varString("", required=True, doc="Threat references")
+    """Threat references"""
 
     def __init__(
         self,
@@ -496,15 +506,22 @@ and holds all details during a run"""
     _sf = None
     _duplicate_ignored_attrs = "name", "note", "order", "response", "responseTo"
     name = varString("", required=True, doc="Model name")
+    """Model name"""
     description = varString("", required=True, doc="Model description")
+    """Model description"""
     threatsFile = varString(os.path.dirname(__file__) + "/threatlib/threats.json",
                             onSet=lambda i, v: i._init_threats(),
                             doc="JSON file with custom threats")
     isOrdered = varBool(False, doc="Automatically order all Dataflows")
+    """Automatically order all Dataflows"""
     mergeResponses = varBool(False, doc="Merge response edges in DFDs")
+    """Merge response edges in DFDs"""
     ignoreUnused = varBool(False, doc="Ignore elements not used in any Dataflow")
+    """Ignore elements not used in any Dataflow"""
     findings = varFindings([], doc="threats found for elements of this model")
+    """threats found for elements of this model"""
     onDuplicates = varAction(Action.NO_ACTION, doc="""How to handle duplicate Dataflow
+    """"""
 with same properties, except name and notes""")
 
     def __init__(self, name, **kwargs):
@@ -795,7 +812,9 @@ class Element():
     name = varString("", required=True)
     description = varString("")
     inBoundary = varBoundary(None, doc="Trust boundary this element exists in")
+    """Trust boundary this element exists in"""
     inScope = varBool(True, doc="Is the element in scope of the threat model")
+    """Is the element in scope of the threat model"""
     maxClassification = varClassification(
         Classification.UNKNOWN,
         required=False,
@@ -949,7 +968,9 @@ class Data():
         doc="Level of classification for this piece of data",
     )
     carriedBy = varElements([], doc="Dataflows that carries this piece of data")
+    """Dataflows that carries this piece of data"""
     processedBy = varElements([], doc="Elements that store/process this piece of data")
+    """Elements that store/process this piece of data"""
 
     def __init__(self, name, **kwargs):
         for key, value in kwargs.items():
@@ -969,15 +990,22 @@ class Data():
 class Asset(Element):
     """An asset with outgoing or incoming dataflows"""
     port = varInt(-1, doc="Default TCP port for incoming data flows")
+    """Default TCP port for incoming data flows"""
     isEncrypted = varBool(False, doc="Requires incoming data flow to be encrypted")
+    """Requires incoming data flow to be encrypted"""
     protocol = varString("", doc="Default network protocol for incoming data flows")
+    """Default network protocol for incoming data flows"""
     data = varData([], doc="Default type of data in incoming data flows")
+    """Default type of data in incoming data flows"""
     inputs = varElements([], doc="incoming Dataflows")
+    """incoming Dataflows"""
     outputs = varElements([], doc="outgoing Dataflows")
+    """outgoing Dataflows"""
     onAWS = varBool(False)
     isHardened = varBool(False)
     implementsAuthenticationScheme = varBool(False)
     implementsNonce = varBool(False, doc="""Nonce is an arbitrary number
+    """"""
 that can be used just once in a cryptographic communication.
 It is often a random or pseudo-random number issued in an authentication protocol
 to ensure that old communications cannot be reused in replay attacks.
@@ -1062,6 +1090,7 @@ class Server(Asset):
     disablesDTD = varBool(False)
     implementsStrictHTTPValidation = varBool(False)
     implementsPOLP = varBool(False, doc="""The principle of least privilege (PoLP),
+    """"""
 also known as the principle of minimal privilege or the principle of least authority,
 requires that in a particular abstraction layer of a computing environment,
 every module (such as a process, a user, or a program, depending on the subject)
@@ -1088,6 +1117,7 @@ class Datastore(Asset):
     onRDS = varBool(False)
     storesLogData = varBool(False)
     storesPII = varBool(False, doc="""Personally Identifiable Information
+    """"""
 is any information relating to an identifiable person.""")
     storesSensitiveData = varBool(False)
     isSQL = varBool(True)
@@ -1100,6 +1130,7 @@ is any information relating to an identifiable person.""")
     handlesInterruptions = varBool(False)
     usesEncryptionAlgorithm = varString("")
     implementsPOLP = varBool(False, doc="""The principle of least privilege (PoLP),
+    """"""
 also known as the principle of minimal privilege or the principle of least authority,
 requires that in a particular abstraction layer of a computing environment,
 every module (such as a process, a user, or a program, depending on the subject)
@@ -1130,10 +1161,15 @@ class Actor(Element):
     """An entity usually initiating actions"""
 
     port = varInt(-1, doc="Default TCP port for outgoing data flows")
+    """Default TCP port for outgoing data flows"""
     protocol = varString("", doc="Default network protocol for outgoing data flows")
+    """Default network protocol for outgoing data flows"""
     data = varData([], doc="Default type of data in outgoing data flows")
+    """Default type of data in outgoing data flows"""
     inputs = varElements([], doc="incoming Dataflows")
+    """incoming Dataflows"""
     outputs = varElements([], doc="outgoing Dataflows")
+    """outgoing Dataflows"""
     authenticatesDestination = varBool(False)
     isAdmin = varBool(False)
 
@@ -1159,6 +1195,7 @@ class Process(Asset):
     environment = varString("")
     disablesiFrames = varBool(False)
     implementsPOLP = varBool(False, doc="""The principle of least privilege (PoLP),
+    """"""
 also known as the principle of minimal privilege or the principle of least authority,
 requires that in a particular abstraction layer of a computing environment,
 every module (such as a process, a user, or a program, depending on the subject)
@@ -1169,6 +1206,7 @@ that are necessary for its legitimate purpose.""")
     usesStrongSessionIdentifiers = varBool(False)
     encryptsCookies = varBool(False)
     usesMFA = varBool(False, doc="""Multi-factor authentication is an authentication method
+    """"""
 in which a computer user is granted access only after successfully presenting two
 or more pieces of evidence (or factors) to an authentication mechanism: knowledge
 (something the user and only the user knows), possession (something the user
@@ -1198,16 +1236,25 @@ class Dataflow(Element):
     source = varElement(None, required=True)
     sink = varElement(None, required=True)
     isResponse = varBool(False, doc="Is a response to another data flow")
+    """Is a response to another data flow"""
     response = varElement(None, doc="Another data flow that is a response to this one")
+    """Another data flow that is a response to this one"""
     responseTo = varElement(None, doc="Is a response to this data flow")
+    """Is a response to this data flow"""
     srcPort = varInt(-1, doc="Source TCP port")
+    """Source TCP port"""
     dstPort = varInt(-1, doc="Destination TCP port")
+    """Destination TCP port"""
     isEncrypted = varBool(False, doc="Is the data encrypted")
+    """Is the data encrypted"""
     protocol = varString("", doc="Protocol used in this data flow")
+    """Protocol used in this data flow"""
     data = varData([], doc="Default type of data in incoming data flows")
+    """Default type of data in incoming data flows"""
     authenticatesDestination = varBool(False)
     authenticatedWith = varBool(False)
     order = varInt(-1, doc="Number of this data flow in the threat model")
+    """Number of this data flow in the threat model"""
     implementsAuthenticationScheme = varBool(False)
     implementsCommunicationProtocol = varBool(False)
     note = varString("")
