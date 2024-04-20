@@ -340,6 +340,7 @@ class TestTM(unittest.TestCase):
         tm = TM(
             "my test tm", description="aaa", threatsFile="pytm/threatlib/threats.json"
         )
+        tm.assumptions = ["This is fine"]
         tm.isOrdered = True
         internet = Boundary("Internet")
         server_db = Boundary("Server/DB")

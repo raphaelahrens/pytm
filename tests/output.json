@@ -390,7 +390,9 @@
             "usesEnvironmentVariables": false
         }
     ],
-    "assumptions": [],
+    "assumptions": [
+        "This is fine"
+    ],
     "boundaries": [
         {
             "controls": {
