@@ -1,12 +1,14 @@
 import unittest
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Annotated, TypeAlias, TypeVar, Any
 
 from functools import reduce
 from hypothesis.strategies import composite, sampled_from, sets, builds, recursive, integers
 from hypothesis import given
 
 from pytm import typecheck
+from pytm.typecheck import required, optional
+
 
 BASE_TYPES = sampled_from(elements=[int, str, float, bool, complex, bytes, type(None)])
 
@@ -33,6 +35,10 @@ def union2(ts):
     return reduce(lambda a, b: Union[a, b], ts)
 
 
+def list_type(t):
+    return list[t]
+
+
 # Construct simple base type Unions
 BASE_UNION_TYPES = builds(union, sets(BASE_TYPES, min_size=1))
 
@@ -41,7 +47,7 @@ T = recursive(BASE_TYPES,
               lambda child:
               builds(union, sets(child, min_size=1, max_size=7)) |
               builds(union2, sets(child, min_size=1, max_size=7)) |
-              builds(lambda t: list[t], child) |
+              builds(list_type, child) |
               dict_generate(child) |
               tuple_generate(child),
               max_leaves=10
@@ -66,8 +72,15 @@ def union_and_sub(draw, elements=T):
     return (t, s)
 
 
-class B:
-    one: str
+class B(typecheck.TypeChecked):
+
+    one: str = required("", """ One is the loneliest number it's the number one""")
+
+    # Maybe like this
+    abc: Annotated[
+            str,
+            "Very long text. Which is too long for this! Which makes it look silly, but anyway"
+            ] = "ahhh"
 
     def __init__(self, one: str):
         self.one = one
@@ -83,9 +96,9 @@ class InnerA(typecheck.TypeChecked):
 
 
 class A(typecheck.TypeChecked):
-    first: int = 0
-    second: list[int]
-    third: B
+    first: int = required(0, "first attr")
+    second: list[int] = optional([], "Optional second attr")
+    third: B = required(None, "This is strange")
     complex_type: list[int | float | str] | dict[int | float, str | bytes]
     inner: InnerA
 

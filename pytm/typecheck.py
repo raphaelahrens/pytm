@@ -1,5 +1,5 @@
 from inspect import isclass
-from typing import get_type_hints, get_origin, get_args, Union
+from typing import get_type_hints, get_origin, get_args, Union, Any
 from types import UnionType, GenericAlias
 from functools import reduce
 from itertools import zip_longest
@@ -74,9 +74,38 @@ def _cmp_types(annotation, value_type):
     return False
 
 
-class TypeChecked:
+class Description:
+    def __init__(self, value: Any, doc: str, required: bool):
+        self.doc = doc
+        self.required = required
+        self.value = value
+
+
+def required(value: Any, doc: str) -> Any:
+    # Hack say it return Any to please mypy
+    return Description(value, doc, True)
+
+
+def optional(value: Any, doc: str) -> Any:
+    # Hack say it return Any to please mypy
+    return Description(value, doc, False)
+
+
+class MetaDescription(type):
+    def __new__(cls, clsname, bases, attributes):
+        attr_description = {}
+        for k, v in ((k, v) for k, v in attributes.items() if not k.startswith("_")):
+            if isinstance(v, Description):
+                attr_description[k] = v
+                attributes[k] = v.value
+                print(k, v)
+        attributes["_attr_description"] = attr_description
+        return super().__new__(cls, clsname, bases, attributes)
+
+
+class TypeChecked(metaclass=MetaDescription):
     def __setattr__(self, name, value):
-        if not name[0] == "_":  # don't type check private attributes
+        if not name.startswith("_"):  # don't type check private attributes
             value_type = _get_type(value)
             anno_type = get_type_hints(self.__class__).get(name)
             if anno_type is None:
